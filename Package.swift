@@ -28,6 +28,9 @@ let package = Package(
             dependencies: ["Sweep"]),
         .testTarget(
             name: "SSVGShapeTests",
-            dependencies: ["SSVGShape"]),
+            dependencies: ["SSVGShape"],
+            resources: [
+                .copy("Resources/test.svg")
+            ]),
     ]
 )

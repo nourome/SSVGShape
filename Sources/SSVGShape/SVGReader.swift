@@ -9,15 +9,15 @@ import Foundation
 import Sweep
 
 struct SVGReader {
-    let fileName: String
-    private let viewBoxTag: Identifier = "viewBox"
-    private let pathTag: Identifier = "<path d"
+    let filePath: String
+    private let viewBoxTag: Identifier = "viewBox=\""
+    private let pathTag: Identifier = "<path d=\""
     private let transformTag: Identifier = "transform"
     
     func parse() -> Result<String, SVGError> {
-        guard let filePath = Bundle.main.path(forResource: fileName, ofType: "svg") else {
+        /*guard let filePath = Bundle.main.path(forResource: fileName, ofType: "svg") else {
             return .failure(.parsingError("svg file not found in bundle"))
-        }
+        }*/
 
         do {
             return .success(try String(contentsOfFile: filePath, encoding: String.Encoding.utf8))
@@ -30,6 +30,8 @@ struct SVGReader {
         
         if let viewBoxRect = content.firstSubstring(between: viewBoxTag, and: "\"") {
             let values =  viewBoxRect.split(separator: " ").map {Float($0)}.compactMap{$0}
+            print("values \(values)")
+            print("viewBoxRect \(viewBoxRect)")
             guard values.count == 4 else {
                 return .failure(.contentNotFound("svg viewBox Rectangle (x y width height) not found!"))
             }

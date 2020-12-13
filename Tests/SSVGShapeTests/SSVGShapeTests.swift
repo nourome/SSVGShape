@@ -2,9 +2,8 @@ import XCTest
 @testable import SSVGShape
 
 final class SSVGShapeTests: XCTestCase {
-    let svgReader = SVGReader()
     
-    func testParseSvgFile() {
+    func testExample() {
         XCTAssertEqual(SSVGShape().text, "Hello, World!")
     }
 
