@@ -2,10 +2,9 @@ import XCTest
 @testable import SSVGShape
 
 final class SSVGShapeTests: XCTestCase {
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
+    let svgReader = SVGReader()
+    
+    func testParseSvgFile() {
         XCTAssertEqual(SSVGShape().text, "Hello, World!")
     }
 
