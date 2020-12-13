@@ -9,17 +9,15 @@ import XCTest
 @testable import SSVGShape
 
 final class SVGReaderTests: XCTestCase {
-    let filePath = Bundle.module.path(forResource: "test", ofType: "svg")!
+    let reader = SVGReader(filePath: Bundle.module.path(forResource: "test", ofType: "svg")!)
     
     
     func testParseSvgFile() {
-        let reader = SVGReader(filePath: filePath)
         let contents = try? reader.parse().get()
         XCTAssertNotNil(contents)
     }
     
     func testGetViewBoxRect() {
-        let reader = SVGReader(filePath: filePath)
         let contents = try! reader.parse().get()
         let viewBoxRectResult =  reader.getViewBoxRect(content: contents)
         
@@ -33,7 +31,6 @@ final class SVGReaderTests: XCTestCase {
     }
     
     func testGetPath() {
-        let reader = SVGReader(filePath: filePath)
         let contents = try! reader.parse().get()
         let pathResult =  reader.getPath(content: contents)
         

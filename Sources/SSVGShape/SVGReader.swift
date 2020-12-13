@@ -12,13 +12,9 @@ struct SVGReader {
     let filePath: String
     private let viewBoxTag: Identifier = "viewBox=\""
     private let pathTag: Identifier = "<path d=\""
-    private let transformTag: Identifier = "transform"
+    private let transformTag: Identifier = "transform=\""
     
     func parse() -> Result<String, SVGError> {
-        /*guard let filePath = Bundle.main.path(forResource: fileName, ofType: "svg") else {
-            return .failure(.parsingError("svg file not found in bundle"))
-        }*/
-
         do {
             return .success(try String(contentsOfFile: filePath, encoding: String.Encoding.utf8))
         } catch {
@@ -30,8 +26,6 @@ struct SVGReader {
         
         if let viewBoxRect = content.firstSubstring(between: viewBoxTag, and: "\"") {
             let values =  viewBoxRect.split(separator: " ").map {Float($0)}.compactMap{$0}
-            print("values \(values)")
-            print("viewBoxRect \(viewBoxRect)")
             guard values.count == 4 else {
                 return .failure(.contentNotFound("svg viewBox Rectangle (x y width height) not found!"))
             }
@@ -51,8 +45,8 @@ struct SVGReader {
     
     func getTransform(content: String) -> Result<String, SVGError> {
         
-        if let pathValues = content.firstSubstring(between: pathTag, and: "\"") {
-            return .success(String(pathValues))
+        if let transformValues = content.firstSubstring(between: transformTag, and: "\"") {
+            return .success(String(transformValues))
         }
         return .failure(.contentNotFound("svg Transform tag not found!"))
     }
