@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum SVGError: Error, Equatable {
+public enum SVGError: Error, Equatable {
     case parsingError(String)
     case readingFileError(String)
     case contentNotFound(String)

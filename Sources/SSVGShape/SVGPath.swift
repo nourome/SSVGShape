@@ -9,7 +9,7 @@ import Foundation
 import CoreGraphics
 import SwiftUI
 
-class SVGPath {
+public class SVGPath {
     var points: [Float]
     func draw(p: inout Path) {}
     init(points: [Float]) {
@@ -17,7 +17,7 @@ class SVGPath {
     }
 }
 
-class SVGMoveTo:SVGPath {
+public class SVGMoveTo:SVGPath {
     override func draw( p: inout Path) {
         if let first = points.first, let last = points.last {
             p.move(to: CGPoint(x: CGFloat(first), y: CGFloat(last)))
@@ -25,7 +25,7 @@ class SVGMoveTo:SVGPath {
     }
 }
 
-class SVGLineTo: SVGPath {
+public class SVGLineTo: SVGPath {
     override func draw(p: inout Path) {
         if let first = points.first, let last = points.last {
             p.addLine(to: CGPoint(x: CGFloat(first), y: CGFloat(last)))
@@ -33,7 +33,7 @@ class SVGLineTo: SVGPath {
         }
 }
 
-class SVGCurveTo: SVGPath {
+public class SVGCurveTo: SVGPath {
     override func draw(p: inout Path) {
         guard points.count == 6 else {
             return

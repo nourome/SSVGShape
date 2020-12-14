@@ -10,16 +10,19 @@ import Sweep
 import CoreGraphics
 
 
-struct SVGReader101: SVGReader {
+public struct SVGReader101: SVGReader {
    
-    var filePath: String
+    public var filePath: String
     private let viewBoxTag: Identifier = "viewBox=\""
     private let pathTag: Identifier = "<path d=\""
     private let transformTag: Identifier = "transform=\""
     private let matrixTag: Identifier = "matrix("
 
-       
-    func parse() -> Result<[SVGPath], SVGError> {
+    init(filePath: String) {
+        self.filePath = filePath
+    }
+    
+    public func parse() -> Result<[SVGPath], SVGError> {
         let svgPaths = read()
             .flatMap(self.getViewBoxRect)
             .flatMap(self.getPath)

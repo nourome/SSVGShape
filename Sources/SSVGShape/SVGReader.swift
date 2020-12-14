@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol SVGReader {
+public protocol SVGReader {
     var filePath: String {get set}
     func parse() -> Result<[SVGPath], SVGError>
 }

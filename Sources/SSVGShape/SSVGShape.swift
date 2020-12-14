@@ -2,7 +2,7 @@
 
 import SwiftUI
 
-struct SSVGShape<R: SVGReader>: Shape {
+public struct SSVGShape<R: SVGReader>: Shape {
     
     private let paths: [SVGPath]
     let reader: R
@@ -19,7 +19,7 @@ struct SSVGShape<R: SVGReader>: Shape {
         }
     }
     
-    func path(in rect: CGRect) -> Path {
+    public func path(in rect: CGRect) -> Path {
         Path { p in
             for path in paths {
                 path.draw(p: &p)
@@ -27,4 +27,7 @@ struct SSVGShape<R: SVGReader>: Shape {
         }
     }
     
+
+    
+    var text = "Hello, World!"
 }
