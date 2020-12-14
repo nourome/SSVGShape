@@ -1,3 +1,3 @@
 # SSVGShape
 
-A description of this package.
+**SSVGShape** — a simple library that parses and converts SVG files to SwiftUI animated shapes.
