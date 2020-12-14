@@ -16,6 +16,7 @@ struct SVGReader101: SVGReader {
     private let pathTag: Identifier = "<path d=\""
     private let transformTag: Identifier = "transform=\""
     private let matrixTag: Identifier = "matrix("
+
        
     func parse() -> Result<[SVGPath], SVGError> {
         let svgPaths = read()
@@ -79,8 +80,6 @@ struct SVGReader101: SVGReader {
         
         print("svg Transform tag not found!")
         return .success(model)
-       
-        //return .failure(.contentNotFound("svg Transform tag not found!"))
     }
     
     func pathStringToSVGPath(model: SVGModel) ->  Result<SVGModel, SVGError> {
@@ -94,38 +93,14 @@ struct SVGReader101: SVGReader {
         case.failure(let error):
             return .failure(error)
         }
-        
-        //return .failure(.convertFailed("failed to parse path string to points"))
     }
     
     func splitPathString(model: SVGModel) ->  Result<[String], SVGError> {
-        let endOfContent = "~"
-        var lastIndex: String.Index = model.content.startIndex
-        let content = model.pathPointsString + endOfContent
-        var lastSymbol = ""
-        var svgs: [String] = []
-        
-        guard content.first?.uppercased() == "M" else {
+                
+        guard model.isFirstLetterM() else {
             return .failure(.convertFailed("Path string dose not start with M or m!!"))
         }
-        
-        for (offset , c) in content.enumerated() {
-            if String(c).uppercased() == "M" {
-                lastSymbol = String(c)
-            }
-            
-            else if String(c).uppercased() == "C" || String(c).uppercased() == "L" || String(c).uppercased() == "Z" || String(c) == endOfContent {
-                let offsetIndex = content.index(model.content.startIndex, offsetBy: offset)
-                let svgSub = String(content[lastIndex..<offsetIndex]).trimmingCharacters(in: .whitespaces)
-                
-                let svgPoints = !svgSub.contains(lastSymbol) ?  lastSymbol + svgSub : svgSub
-                svgs.append(svgPoints)
-                lastIndex = offsetIndex
-                lastSymbol = String(c)
-            }
-        }
-        
-        return .success(svgs)
+        return .success(model.split())
         
     }
     
@@ -165,8 +140,6 @@ struct SVGReader101: SVGReader {
         }
         
         return .success(paths)
-        
-        
     }
     
     func getMoveToSVGPath(using p: String) -> SVGPath? {
@@ -248,12 +221,13 @@ struct SVGReader101: SVGReader {
         }
         
         let transformedPaths = model.paths
-        var alternateX = true
+        var isCoordX = true
+        
         for n in 0..<transformedPaths.count {
             for z in 0..<transformedPaths[n].points.count {
-                let transformed = (alternateX) ? (transformedPaths[n].points[z] +  matrix.translateX) / Float(model.rect.width) : (transformedPaths[n].points[z] + matrix.translateY) / Float(model.rect.height)
-                alternateX = !alternateX
-                transformedPaths[n].points[z] = transformed
+                transformedPaths[n].points[z] = (isCoordX) ? translateX(value: transformedPaths[n].points[z] , by: matrix.translateX, width: model.rect.width) : translateY(value: transformedPaths[n].points[z] , by: matrix.translateY, height: model.rect.height)
+                
+                isCoordX = !isCoordX
             }
         }
         
@@ -262,5 +236,13 @@ struct SVGReader101: SVGReader {
         
         return updatedModel
     }
+    
+    func translateX(value: Float, by tx: Float, width: CGFloat) -> Float {
+        return (value +  tx) / Float(width)
+    }
 
+    func translateY(value: Float, by ty: Float, height: CGFloat) -> Float {
+        return (value +  ty) / Float(height)
+    }
+  
 }
