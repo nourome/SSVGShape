@@ -144,6 +144,34 @@ final class SVGReaderTests: XCTestCase {
         
     }
     
+   
+    
+    func testParseInvalid() {
+        let reader = SVGReader101(filePath: Bundle.module.path(forResource: "invalid", ofType: "svg")!)
+        let model = reader.parse()
+       
+        switch model {
+        case .success(_):
+            XCTFail()
+        case .failure(let error):
+            XCTAssertEqual(error, SVGError.contentNotFound("svg Path tag not found!"))
+        }
+        
+    }
+    
+    func testParseInvalid2() {
+        let reader = SVGReader101(filePath: Bundle.module.path(forResource: "invalid2", ofType: "svg")!)
+        let model = reader.parse()
+       
+        switch model {
+        case .success(_):
+            XCTFail()
+        case .failure(let error):
+            XCTAssertEqual(error, SVGError.contentNotFound("svg viewBox tag not found!"))
+        }
+        
+    }
+    
     static var allTests = [
         ("testParseSvgFile", testParseSvgFile),
     ]

@@ -30,7 +30,9 @@ let package = Package(
             name: "SSVGShapeTests",
             dependencies: ["SSVGShape"],
             resources: [
-                .copy("Resources/test.svg")
+                .copy("Resources/test.svg"),
+                .copy("Resources/invalid.svg"),
+                .copy("Resources/invalid2.svg")
             ]),
     ]
 )
