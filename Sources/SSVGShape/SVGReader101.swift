@@ -7,6 +7,7 @@
 
 import Foundation
 import Sweep
+import CoreGraphics
 
 
 struct SVGReader101: SVGReader {
