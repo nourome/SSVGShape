@@ -18,7 +18,7 @@ public struct SVGReader101: SVGReader {
     private let transformTag: Identifier = "transform=\""
     private let matrixTag: Identifier = "matrix("
 
-    init(filePath: String) {
+    public init(filePath: String) {
         self.filePath = filePath
     }
     

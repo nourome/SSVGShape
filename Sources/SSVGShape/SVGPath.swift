@@ -12,7 +12,7 @@ import SwiftUI
 public class SVGPath {
     var points: [Float]
     func draw(p: inout Path) {}
-    init(points: [Float]) {
+   init(points: [Float]) {
         self.points = points
     }
 }

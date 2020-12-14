@@ -7,7 +7,7 @@ public struct SSVGShape<R: SVGReader>: Shape {
     private let paths: [SVGPath]
     let reader: R
     
-    init(reader: R) {
+    public init(reader: R) {
         self.reader = reader
         let result = reader.parse()
         
