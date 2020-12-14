@@ -11,4 +11,5 @@ enum SVGError: Error {
     case parsingError(String)
     case readingFileError(String)
     case contentNotFound(String)
+    case convertFailed(String)
 }

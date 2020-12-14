@@ -25,7 +25,7 @@ class SVGMoveTo:SVGPath {
     }
 }
 
-class SvgLineTo: SVGPath {
+class SVGLineTo: SVGPath {
     override func draw(p: inout Path) {
         if let first = points.first, let last = points.last {
             p.addLine(to: CGPoint(x: CGFloat(first), y: CGFloat(last)))
@@ -33,12 +33,11 @@ class SvgLineTo: SVGPath {
         }
 }
 
-class SvgCurveTo: SVGPath {
+class SVGCurveTo: SVGPath {
     override func draw(p: inout Path) {
         guard points.count == 6 else {
             return
         }
-        //p.addQuadCurve(to: CGPoint(x: CGFloat(points[2]), y: CGFloat(points[3])), control: CGPoint(x: CGFloat(points[4]), y: CGFloat(points[5])))
         p.addCurve(to: CGPoint(x: CGFloat(points[4]), y: CGFloat(points[5])), control1: CGPoint(x: CGFloat(points[0]), y: CGFloat(points[1])), control2: CGPoint(x: CGFloat(points[2]), y: CGFloat(points[3])))
     }
 }

@@ -9,12 +9,19 @@ import Foundation
 import CoreGraphics
 
 struct SVGModel {
-    var content: String
-    var size: CGSize = .zero
-    var matrix: [Float] = []
+    var content: String = ""
+    var rect: CGRect = .zero
+    var transformString: String = ""
+    var matrix: SVGMatrix? = nil
+    var pathPointsString: String = ""
     var paths: [SVGPath] = []
-    
-    init(content: String) {
-        self.content = content
-    }
+}
+
+struct SVGMatrix {
+    let translateX: Float
+    let translateY: Float
+    let rotateX: Float
+    let rotateY: Float
+    let scaleX: Float
+    let scaleY: Float
 }
