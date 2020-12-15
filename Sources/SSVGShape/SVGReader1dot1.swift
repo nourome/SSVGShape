@@ -152,10 +152,15 @@ public struct SVGReader1dot1: SVGReader {
                     onePath.append(linePoint)
                 }
                 
+                if String(first).uppercased() == "Z" {
+                    onePath.append(SVGClose(coordinates: []))
+                }
+                
                 offset += 1
             }
             paths.append(onePath)
         }
+        
         return .success(paths)
     }
     

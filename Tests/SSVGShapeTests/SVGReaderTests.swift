@@ -189,6 +189,33 @@ final class SVGReaderTests: XCTestCase {
         
     }
     
+    func testGetClosedPath() {
+        let reader = SVGReader1dot1(filePath: Bundle.module.path(forResource: "closed", ofType: "svg")!)
+        let model = try! reader.read().get()
+        let pathResult =  reader.getPath(model: model)
+        
+        switch pathResult {
+        case .success(let model):
+            print(model.pathPointsString.count)
+            XCTAssertEqual(model.pathPointsString.first!.last!.uppercased(), "Z")
+            XCTAssertEqual(model.pathPointsString.count, 1)
+        case .failure(_):
+            XCTFail()
+        }
+        
+        let svgPathsResult =  reader.pathStringToSVGPath(model: try! pathResult.get())
+        
+        switch svgPathsResult {
+        case .success(let model):
+            XCTAssertNotNil(model.paths.first!.last! as? SVGClose)
+        case .failure(let error):
+            print("error \(error)")
+            XCTFail()
+        }
+        
+        
+    }
+    
     static var allTests = [
         ("testParseSvgFile", testParseSvgFile),
     ]

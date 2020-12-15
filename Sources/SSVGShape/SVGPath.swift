@@ -62,5 +62,13 @@ public class SVGCurveTo: SVGPath {
         
         p.addCurve(to: CGPoint(x: points.last!.x * rect.width, y: points.last!.y * rect.height), control1: CGPoint(x: points.first!.x * rect.width , y: points.first!.y * rect.height), control2: CGPoint(x: points[1].x * rect.width, y: points[1].y * rect.height))
     }
+    
+}
+
+public class SVGClose: SVGPath {
+    override func draw(p: inout Path, rect: CGRect) {
+        p.closeSubpath()
+    }
+    
 }
 

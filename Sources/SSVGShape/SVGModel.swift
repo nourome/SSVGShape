@@ -47,6 +47,10 @@ struct SVGModel {
         return pathString.first?.uppercased() == "M"
     }
     
+    func isClosedPath(pathString: String) -> Bool {
+        return pathString.last?.uppercased() == "Z"
+    }
+    
 }
 
 
