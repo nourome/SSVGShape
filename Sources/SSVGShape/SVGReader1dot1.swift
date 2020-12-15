@@ -10,7 +10,7 @@ import Sweep
 import CoreGraphics
 
 
-public struct SVGReader101: SVGReader {
+public struct SVGReader1dot1: SVGReader {
    
     public var filePath: String
     private let viewBoxTag: Identifier = "viewBox=\""

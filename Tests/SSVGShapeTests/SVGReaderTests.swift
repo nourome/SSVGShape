@@ -9,7 +9,7 @@ import XCTest
 @testable import SSVGShape
 
 final class SVGReaderTests: XCTestCase {
-    let reader = SVGReader101(filePath: Bundle.module.path(forResource: "test", ofType: "svg")!)
+    let reader = SVGReader1dot1(filePath: Bundle.module.path(forResource: "test", ofType: "svg")!)
     
     
     func testParseSvgFile() {
@@ -147,7 +147,7 @@ final class SVGReaderTests: XCTestCase {
    
     
     func testParseInvalid() {
-        let reader = SVGReader101(filePath: Bundle.module.path(forResource: "invalid", ofType: "svg")!)
+        let reader = SVGReader1dot1(filePath: Bundle.module.path(forResource: "invalid", ofType: "svg")!)
         let model = reader.parse()
        
         switch model {
@@ -160,7 +160,7 @@ final class SVGReaderTests: XCTestCase {
     }
     
     func testParseInvalid2() {
-        let reader = SVGReader101(filePath: Bundle.module.path(forResource: "invalid2", ofType: "svg")!)
+        let reader = SVGReader1dot1(filePath: Bundle.module.path(forResource: "invalid2", ofType: "svg")!)
         let model = reader.parse()
        
         switch model {

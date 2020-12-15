@@ -22,12 +22,8 @@ public struct SSVGShape<R: SVGReader>: Shape {
     public func path(in rect: CGRect) -> Path {
         Path { p in
             for path in paths {
-                path.draw(p: &p)
+                path.draw(p: &p, rect: rect)
             }
         }
     }
-    
-
-    
-    var text = "Hello, World!"
 }
