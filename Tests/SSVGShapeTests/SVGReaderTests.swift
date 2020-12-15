@@ -49,7 +49,7 @@ final class SVGReaderTests: XCTestCase {
         
         switch transformResult {
         case .success(let model):
-            XCTAssertTrue(model.transformString.contains("matrix"))
+            XCTAssertTrue(model.transMatrixString.contains("matrix"))
         case .failure(_):
             XCTFail()
         }
@@ -75,8 +75,8 @@ final class SVGReaderTests: XCTestCase {
         
         let moveToPoint = reader.getMoveToSVGPath(using: "M1.0,0.0")
         XCTAssertNotNil(moveToPoint)
-        XCTAssertEqual(moveToPoint?.points.count, 2)
-        XCTAssertEqual(moveToPoint?.points.first, 1.0)
+        XCTAssertEqual(moveToPoint?.points.count, 1)
+        XCTAssertEqual(moveToPoint?.points.first, CGPoint(x: 1.0, y: 0.0))
         
         let moveToPointNil = reader.getMoveToSVGPath(using: "0.0")
         XCTAssertNil(moveToPointNil)
@@ -87,8 +87,8 @@ final class SVGReaderTests: XCTestCase {
         
         let lineToPoint = reader.getMoveToSVGPath(using: "L2.0,3.0")
         XCTAssertNotNil(lineToPoint)
-        XCTAssertEqual(lineToPoint?.points.count, 2)
-        XCTAssertEqual(lineToPoint?.points.first, 2.0)
+        XCTAssertEqual(lineToPoint?.points.count, 1)
+        XCTAssertEqual(lineToPoint?.points.first, CGPoint(x: 2.0, y: 3.0))
         
         let lineToPointNil = reader.getMoveToSVGPath(using: "1.0,1.0f")
         XCTAssertNil(lineToPointNil)
@@ -96,10 +96,11 @@ final class SVGReaderTests: XCTestCase {
     
     func testCurveToSVGPath() {
         
-        let curveToPoint = reader.getCurveToSVGPath(using: "C2.0,3.0 3.0,4.0 5.0, 6.6")
+        let curveToPoint = reader.getCurveToSVGPath(using: "C2.0,3.0 3.0,4.0 5.0, 6.0")
         XCTAssertNotNil(curveToPoint)
-        XCTAssertEqual(curveToPoint?.points.count, 6)
-        XCTAssertEqual(curveToPoint?.points.last, 6.6)
+        XCTAssertEqual(curveToPoint?.points.count, 3)
+        XCTAssertEqual(curveToPoint?.points.last!.x,  5.0)
+        XCTAssertEqual(curveToPoint!.points.last!.y,  6.0)
         
         let curveToPointNil = reader.getMoveToSVGPath(using: "C1.0,1.0 1.0,1.0")
         XCTAssertNil(curveToPointNil)
@@ -112,9 +113,9 @@ final class SVGReaderTests: XCTestCase {
         let modelWithSvgPaths =  try! reader.pathStringToSVGPath(model: modelWithPathString).get()
         let modelWithTransformMatrix =  try! reader.getTransform(model: modelWithSvgPaths).get()
         
-        let result  = reader.getTransformationMatrix(model: modelWithTransformMatrix)
-        XCTAssertEqual(result?.first, 1.0)
-        XCTAssertEqual(result?.last, -143.889)
+        let result  = reader.getTranslateMatrix(model: modelWithTransformMatrix)
+        XCTAssertEqual(result?[0,0], 1.0)
+        XCTAssertEqual(result?[2,1], -143.889)
     }
     
     func testConvertToLocalCorrdinates() {
@@ -126,7 +127,7 @@ final class SVGReaderTests: XCTestCase {
         
         let result  = reader.convertToLocalCorrdinates(model: modelWithTransformMatrix)
         let firstPoint = result.paths.first
-        XCTAssertEqual(firstPoint?.points, [0.0016778524, 0.99554646])
+        XCTAssertEqual(firstPoint?.points.first, CGPoint(x: 0.0016778523489932886, y: 0.9955464756621747))
         
     }
     
@@ -136,7 +137,7 @@ final class SVGReaderTests: XCTestCase {
         switch model {
         case .success(let paths):
             XCTAssertEqual(paths.count, 4)
-            XCTAssertEqual(paths.first?.points, [0.0016778524, 0.99554646])
+            XCTAssertEqual(paths.first?.points.first, CGPoint(x: 0.0016778523489932886, y: 0.9955464756621747))
         case .failure(let error):
             print(error)
             XCTFail()

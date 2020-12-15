@@ -8,7 +8,7 @@
 import Foundation
 import Sweep
 import CoreGraphics
-
+import simd
 
 public struct SVGReader1dot1: SVGReader {
    
@@ -57,7 +57,7 @@ public struct SVGReader1dot1: SVGReader {
                 return .failure(.contentNotFound("svg viewBox Rectangle (x y width height) not found!"))
             }
             var updatedModel = model
-            updatedModel.rect = CGRect(x: CGFloat(values[0]), y: CGFloat(values[1]), width: CGFloat(values[2]), height: CGFloat(values[3]))
+            updatedModel.rect =  CGRect(x: CGFloat(values[0]), y: CGFloat(values[1]), width: CGFloat(values[2]), height: CGFloat(values[3]))
             return .success(updatedModel)
         }
            
@@ -78,7 +78,7 @@ public struct SVGReader1dot1: SVGReader {
         
         if let transformValues = model.content.firstSubstring(between: transformTag, and: "\"") {
             var updatedModel = model
-            updatedModel.transformString = String(transformValues)
+            updatedModel.transMatrixString = String(transformValues)
             return .success(updatedModel)
         }
         
@@ -157,7 +157,7 @@ public struct SVGReader1dot1: SVGReader {
             return nil
         }
         
-        return SVGMoveTo(points: [x,y])
+        return SVGMoveTo(coordinates: [x,y])
     }
     
     func getCurveToSVGPath(using p: String) -> SVGPath? {
@@ -168,7 +168,7 @@ public struct SVGReader1dot1: SVGReader {
             return nil
         }
         
-        return SVGCurveTo(points: points)
+        return SVGCurveTo(coordinates: points)
     }
     
     func getLineToSVGPath(using p: String) -> SVGPath? {
@@ -182,35 +182,36 @@ public struct SVGReader1dot1: SVGReader {
             return nil
         }
         
-        return SVGLineTo(points: [x,y])
+        return SVGLineTo(coordinates: [x,y])
     }
     
     func convertToLocalCorrdinates(model: SVGModel) -> SVGModel {
         
-        guard !model.transformString.isEmpty else {
+        guard !model.transMatrixString.isEmpty else {
             return model
         }
         
-        if let matrix = getTransformationMatrix(model: model) {
-            let svgMatrix = SVGMatrix(translateX: matrix[4], translateY: matrix[5], rotateX: matrix[0], rotateY: matrix[1], scaleX: matrix[2], scaleY: matrix[3])
+        if let matrix = getTranslateMatrix(model: model) {
             var updatedModel = model
-            updatedModel.matrix = svgMatrix
-            return applyTransformation(for: updatedModel)
+            updatedModel.translateMatrix = matrix
+            return applyTranslation(for: updatedModel)
         }
-        
-        
+                
         return model
         
     }
     
-    func getTransformationMatrix(model: SVGModel) -> [Float]? {
+    func getTranslateMatrix(model: SVGModel) -> simd_float3x3? {
         
-        if model.transformString.contains("matrix") {
+        if model.transMatrixString.contains("matrix") {
             if let transformMatrix = model.content.firstSubstring(between: matrixTag, and: ")") {
                 let points = transformMatrix.split(separator: ",").compactMap{Float($0)}
                 
                 if points.count == 6 {
-                    return points
+                    var matrix3x3 = matrix_identity_float3x3
+                    matrix3x3[2,0] = points[4]
+                    matrix3x3[2,1] = points[5]
+                    return matrix3x3
                 }
             }
         }
@@ -218,20 +219,19 @@ public struct SVGReader1dot1: SVGReader {
         return nil
     }
     
-    func applyTransformation(for model: SVGModel) -> SVGModel {
+    func applyTranslation(for model: SVGModel) -> SVGModel {
         
-        guard let matrix = model.matrix else {
+        guard let matrix = model.translateMatrix else {
             return model
         }
         
         let transformedPaths = model.paths
-        var isCoordX = true
         
         for n in 0..<transformedPaths.count {
             for z in 0..<transformedPaths[n].points.count {
-                transformedPaths[n].points[z] = (isCoordX) ? translateX(value: transformedPaths[n].points[z] , by: matrix.translateX, width: model.rect.width) : translateY(value: transformedPaths[n].points[z] , by: matrix.translateY, height: model.rect.height)
+                let newPositionVector = matrix * simd_float3(Float(transformedPaths[n].points[z].x), Float(transformedPaths[n].points[z].y), 1)
                 
-                isCoordX = !isCoordX
+                transformedPaths[n].points[z] = CGPoint(x: CGFloat(newPositionVector[0]) / model.rect.width, y: CGFloat(newPositionVector[1]) / model.rect.height)
             }
         }
         
@@ -241,12 +241,8 @@ public struct SVGReader1dot1: SVGReader {
         return updatedModel
     }
     
-    func translateX(value: Float, by tx: Float, width: CGFloat) -> Float {
-        return (value +  tx) / Float(width)
-    }
 
-    func translateY(value: Float, by ty: Float, height: CGFloat) -> Float {
-        return (value +  ty) / Float(height)
-    }
+   
+    
   
 }

@@ -7,12 +7,13 @@
 
 import Foundation
 import CoreGraphics
+import simd
 
 struct SVGModel {
     var content: String = ""
     var rect: CGRect = .zero
-    var transformString: String = ""
-    var matrix: SVGMatrix? = nil
+    var transMatrixString: String = ""
+    var translateMatrix: simd_float3x3? = nil
     var pathPointsString: String = ""
     var paths: [SVGPath] = []
 
@@ -48,11 +49,4 @@ struct SVGModel {
     
 }
 
-struct SVGMatrix {
-    let translateX: Float
-    let translateY: Float
-    let rotateX: Float
-    let rotateY: Float
-    let scaleX: Float
-    let scaleY: Float
-}
+
