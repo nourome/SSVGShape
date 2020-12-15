@@ -48,7 +48,7 @@ public class SVGMoveTo:SVGPath {
 public class SVGLineTo: SVGPath {
     override func draw(p: inout Path, rect: CGRect) {
         if let point = points.first {
-            p.addLine(to: CGPoint(x: point.x * rect.width, y: point.x * rect.height))
+            p.addLine(to: CGPoint(x: point.x * rect.width, y: point.y * rect.height))
         }
         }
 }
