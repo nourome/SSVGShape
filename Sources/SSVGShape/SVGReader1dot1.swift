@@ -244,12 +244,11 @@ public struct SVGReader1dot1: SVGReader {
         
         updatedModel.paths =  model.paths.map { paths  in
             return paths.map { svgPath in
-                return SVGPath(points: svgPath.points.map { point in
-                    
+                svgPath.points = svgPath.points.map { point in
                     let newPositionVector = matrix * simd_float3(Float(point.x), Float(point.y), 1)
-                    
                     return CGPoint(x: CGFloat(newPositionVector[0]) / model.rect.width, y: CGFloat(newPositionVector[1]) / model.rect.height)
-                })
+                }
+                return svgPath
             }
         }
         
