@@ -9,5 +9,5 @@ import Foundation
 
 public protocol SVGReader {
     var filePath: String {get set}
-    func parse() -> Result<[SVGPath], SVGError>
+    func parse() -> Result<[[SVGPath]], SVGError>
 }

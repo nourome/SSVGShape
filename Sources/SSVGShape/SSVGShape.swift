@@ -4,7 +4,7 @@ import SwiftUI
 
 public struct SSVGShape<R: SVGReader>: Shape {
     
-    private let paths: [SVGPath]
+    private let paths: [[SVGPath]]
     let reader: R
     
     public init(reader: R) {
@@ -22,8 +22,10 @@ public struct SSVGShape<R: SVGReader>: Shape {
     
     public func path(in rect: CGRect) -> Path {
         Path { p in
-            for path in paths {
-                path.draw(p: &p, rect: rect)
+            for onePath in paths {
+                for path in onePath {
+                    path.draw(p: &p, rect: rect)
+                }
             }
         }
     }

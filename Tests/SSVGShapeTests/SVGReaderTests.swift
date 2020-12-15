@@ -36,7 +36,7 @@ final class SVGReaderTests: XCTestCase {
         
         switch pathResult {
         case .success(let model):
-            XCTAssertEqual(model.pathPointsString.first!.uppercased(), "M")
+            XCTAssertEqual(model.pathPointsString.first?.first!.uppercased(), "M")
         case .failure(_):
             XCTFail()
         }
@@ -63,7 +63,7 @@ final class SVGReaderTests: XCTestCase {
         
         switch svgPathsResult {
         case .success(let model):
-            XCTAssertEqual(model.paths.count, 4)
+            XCTAssertEqual(model.paths.first!.count, 4)
         case .failure(let error):
             print("error \(error)")
             XCTFail()
@@ -127,7 +127,7 @@ final class SVGReaderTests: XCTestCase {
         
         let result  = reader.convertToLocalCorrdinates(model: modelWithTransformMatrix)
         let firstPoint = result.paths.first
-        XCTAssertEqual(firstPoint?.points.first, CGPoint(x: 0.0016778523489932886, y: 0.9955464756621747))
+        XCTAssertEqual(firstPoint?.first?.points.first, CGPoint(x: 0.0016778523489932886, y: 0.9955464756621747))
         
     }
     
@@ -136,8 +136,8 @@ final class SVGReaderTests: XCTestCase {
        
         switch model {
         case .success(let paths):
-            XCTAssertEqual(paths.count, 4)
-            XCTAssertEqual(paths.first?.points.first, CGPoint(x: 0.0016778523489932886, y: 0.9955464756621747))
+            XCTAssertEqual(paths.first!.count, 4)
+            XCTAssertEqual(paths.first?.first?.points.first, CGPoint(x: 0.0016778523489932886, y: 0.9955464756621747))
         case .failure(let error):
             print(error)
             XCTFail()
@@ -169,6 +169,22 @@ final class SVGReaderTests: XCTestCase {
             XCTFail()
         case .failure(let error):
             XCTAssertEqual(error, SVGError.contentNotFound("svg viewBox tag not found!"))
+        }
+        
+    }
+    
+    func testGetMultiPath() {
+        let reader = SVGReader1dot1(filePath: Bundle.module.path(forResource: "multi", ofType: "svg")!)
+        let model = try! reader.read().get()
+        let pathResult =  reader.getPath(model: model)
+        
+        switch pathResult {
+        case .success(let model):
+            print(model.pathPointsString.count)
+            XCTAssertEqual(model.pathPointsString.first!.first!.uppercased(), "M")
+            XCTAssertEqual(model.pathPointsString.count, 2)
+        case .failure(_):
+            XCTFail()
         }
         
     }

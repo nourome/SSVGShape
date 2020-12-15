@@ -32,7 +32,8 @@ let package = Package(
             resources: [
                 .copy("Resources/test.svg"),
                 .copy("Resources/invalid.svg"),
-                .copy("Resources/invalid2.svg")
+                .copy("Resources/invalid2.svg"),
+                .copy("Resources/multi.svg")
             ]),
     ]
 )

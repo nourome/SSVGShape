@@ -14,16 +14,16 @@ struct SVGModel {
     var rect: CGRect = .zero
     var transMatrixString: String = ""
     var translateMatrix: simd_float3x3? = nil
-    var pathPointsString: String = ""
-    var paths: [SVGPath] = []
+    var pathPointsString: [String] = []
+    var paths: [[SVGPath]] = []
 
     private let endOfContent = "~"
 
-    func split() -> [String] {
-        var lastIndex: String.Index = pathPointsString.startIndex
+    func split(pathString: String) -> [String] {
+        var lastIndex: String.Index = pathString.startIndex
         var lastSymbol = ""
         var svgs: [String] = []
-        let pathContent = pathPointsString + endOfContent
+        let pathContent = pathString + endOfContent
         
         for (offset , c) in pathContent.enumerated() {
             if String(c).uppercased() == "M" {
@@ -43,8 +43,8 @@ struct SVGModel {
         return svgs
     }
     
-    func isFirstLetterM() -> Bool {
-        return pathPointsString.first?.uppercased() == "M"
+    func isFirstLetterM(pathString: String) -> Bool {
+        return pathString.first?.uppercased() == "M"
     }
     
 }

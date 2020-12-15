@@ -18,15 +18,16 @@ extension Array {
 }
 
 public class SVGPath {
-    //var raw: [Float]
     var points: [CGPoint] = []
     func draw(p: inout Path, rect: CGRect) {}
     
    init(coordinates: [Float]) {
-        //self.raw = coordinates
         self.points = self.makeCGPoints(coordinates: coordinates)
     }
     
+    init(points: [CGPoint]) {
+        self.points = points
+    }
     
     private func makeCGPoints(coordinates: [Float]) -> [CGPoint] {
         let split = coordinates.chunked(into: 2).map { coord in

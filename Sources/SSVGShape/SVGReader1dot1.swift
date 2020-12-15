@@ -11,24 +11,24 @@ import CoreGraphics
 import simd
 
 public struct SVGReader1dot1: SVGReader {
-   
+    
     public var filePath: String
     private let viewBoxTag: Identifier = "viewBox=\""
     private let pathTag: Identifier = "<path d=\""
     private let transformTag: Identifier = "transform=\""
     private let matrixTag: Identifier = "matrix("
-
+    
     public init(filePath: String) {
         self.filePath = filePath
     }
     
-    public func parse() -> Result<[SVGPath], SVGError> {
+    public func parse() -> Result<[[SVGPath]], SVGError> {
         let svgPaths = read()
             .flatMap(self.getViewBoxRect)
             .flatMap(self.getPath)
             .flatMap(self.getTransform)
             .flatMap(self.pathStringToSVGPath).map(self.convertToLocalCorrdinates)
-            
+        
         
         switch svgPaths {
         case .success(let svgModel):
@@ -60,18 +60,21 @@ public struct SVGReader1dot1: SVGReader {
             updatedModel.rect =  CGRect(x: CGFloat(values[0]), y: CGFloat(values[1]), width: CGFloat(values[2]), height: CGFloat(values[3]))
             return .success(updatedModel)
         }
-           
+        
         return .failure(.contentNotFound("svg viewBox tag not found!"))
     }
     
     func getPath(model: SVGModel) -> Result<SVGModel, SVGError> {
         
-        if let pathValues = model.content.firstSubstring(between: pathTag, and: "\"") {
-            var updatedModel = model
-            updatedModel.pathPointsString = String(pathValues)
-            return .success(updatedModel)
+        let pathValues = model.content.substrings(between: pathTag, and: "\"")
+        guard !pathValues.isEmpty else {
+            return .failure(.contentNotFound("svg Path tag not found!"))
         }
-        return .failure(.contentNotFound("svg Path tag not found!"))
+        
+        var updatedModel = model
+        updatedModel.pathPointsString = pathValues.map{String($0)}
+        return .success(updatedModel)
+        
     }
     
     func getTransform(model: SVGModel) -> Result<SVGModel, SVGError> {
@@ -88,61 +91,71 @@ public struct SVGReader1dot1: SVGReader {
     
     func pathStringToSVGPath(model: SVGModel) ->  Result<SVGModel, SVGError> {
         let svgPaths = splitPathString(model: model).map(convertPathStringToSVGPaths).flatMap{$0}
-            
+        
         switch svgPaths {
         case .success(let paths):
             var updatedModel = model
             updatedModel.paths = paths
-        return .success(updatedModel)
+            return .success(updatedModel)
         case.failure(let error):
             return .failure(error)
         }
     }
     
-    func splitPathString(model: SVGModel) ->  Result<[String], SVGError> {
-                
-        guard model.isFirstLetterM() else {
-            return .failure(.convertFailed("Path string dose not start with M or m!!"))
+    func splitPathString(model: SVGModel) ->  Result<[[String]], SVGError> {
+        var splits: [[String]] = []
+        
+        for pathString in model.pathPointsString {
+            guard model.isFirstLetterM(pathString: pathString) else {
+                return .failure(.convertFailed("Path string dose not start with M or m!!"))
+            }
+            splits.append(model.split(pathString: pathString))
         }
-        return .success(model.split())
+        
+        return .success(splits)
         
     }
     
-    func convertPathStringToSVGPaths(points: [String]) -> Result<[SVGPath], SVGError> {
+    func convertPathStringToSVGPaths(points: [[String]]) -> Result<[[SVGPath]], SVGError> {
         
         var offset = 0
-        var paths: [SVGPath] = []
+        var paths: [[SVGPath]] = []
         
-        for p in points {
-            let first = p.first ?? " "
         
-            if String(first).uppercased() == "M" {
-                guard let movePoint = getMoveToSVGPath(using: p) else {
-                    return .failure(.convertFailed("MoveTo point missing X or Y corrdinates or values are not float!!"))
+        for pp in points  {
+            var onePath: [SVGPath] = []
+            for p in pp {
+                
+                let first = p.first ?? " "
+                
+                if String(first).uppercased() == "M" {
+                    guard let movePoint = getMoveToSVGPath(using: p) else {
+                        return .failure(.convertFailed("MoveTo point missing X or Y corrdinates or values are not float!!"))
+                    }
+                    onePath.append(movePoint)
                 }
-                paths.append(movePoint)
+                
+                if String(first).uppercased() == "C" {
+                    
+                    guard let curvePoint = getCurveToSVGPath(using: p) else {
+                        return .failure(.convertFailed("CurveTo points are smaller than 6 points or values are not float!!"))
+                    }
+                    
+                    onePath.append(curvePoint)
+                }
+                
+                if String(first).uppercased() == "L" {
+                    
+                    guard let linePoint = getLineToSVGPath(using: p) else {
+                        return .failure(.convertFailed("LineTo point missing X or Y corrdinates or values are not float!!"))
+                    }
+                    onePath.append(linePoint)
+                }
+                
+                offset += 1
             }
-            
-            if String(first).uppercased() == "C" {
-                
-                guard let curvePoint = getCurveToSVGPath(using: p) else {
-                    return .failure(.convertFailed("CurveTo points are smaller than 6 points or values are not float!!"))
-                }
-                
-                paths.append(curvePoint)
-            }
-            
-            if String(first).uppercased() == "L" {
-                
-                guard let linePoint = getLineToSVGPath(using: p) else {
-                    return .failure(.convertFailed("LineTo point missing X or Y corrdinates or values are not float!!"))
-                }
-                paths.append(linePoint)
-                }
-            
-            offset += 1
+            paths.append(onePath)
         }
-        
         return .success(paths)
     }
     
@@ -196,7 +209,7 @@ public struct SVGReader1dot1: SVGReader {
             updatedModel.translateMatrix = matrix
             return applyTranslation(for: updatedModel)
         }
-                
+        
         return model
         
     }
@@ -225,24 +238,39 @@ public struct SVGReader1dot1: SVGReader {
             return model
         }
         
-        let transformedPaths = model.paths
         
-        for n in 0..<transformedPaths.count {
-            for z in 0..<transformedPaths[n].points.count {
-                let newPositionVector = matrix * simd_float3(Float(transformedPaths[n].points[z].x), Float(transformedPaths[n].points[z].y), 1)
-                
-                transformedPaths[n].points[z] = CGPoint(x: CGFloat(newPositionVector[0]) / model.rect.width, y: CGFloat(newPositionVector[1]) / model.rect.height)
+       // var transformedPathsx = model.paths
+        var updatedModel = model
+        
+        updatedModel.paths =  model.paths.map { paths  in
+            return paths.map { svgPath in
+                return SVGPath(points: svgPath.points.map { point in
+                    
+                    let newPositionVector = matrix * simd_float3(Float(point.x), Float(point.y), 1)
+                    
+                    return CGPoint(x: CGFloat(newPositionVector[0]) / model.rect.width, y: CGFloat(newPositionVector[1]) / model.rect.height)
+                })
             }
         }
         
-        var updatedModel = model
-        updatedModel.paths = transformedPaths
+        /*for path in model.paths {
+            for n in 0..<path.count {
+                for z in 0..<path[n].points.count {
+                    let newPositionVector = matrix * simd_float3(Float(path[n].points[z].x), Float(path[n].points[z].y), 1)
+                    
+                    path[n].points[z] = CGPoint(x: CGFloat(newPositionVector[0]) / model.rect.width, y: CGFloat(newPositionVector[1]) / model.rect.height)
+                }
+            }
+        }*/
+        
+        //var updatedModel = model
+        //updatedModel.paths = transformedPathsx
         
         return updatedModel
     }
     
-
-   
     
-  
+    
+    
+    
 }
