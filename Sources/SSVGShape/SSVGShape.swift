@@ -15,7 +15,8 @@ public struct SSVGShape<R: SVGReader>: Shape {
         case .success(let p):
             paths = p
         case .failure(let error):
-            fatalError("Error \(error.localizedDescription)")
+            print(error)
+            fatalError("SVG file parsing failed")
         }
     }
     
