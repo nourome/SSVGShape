@@ -34,7 +34,9 @@ let package = Package(
                 .copy("Resources/invalid.svg"),
                 .copy("Resources/invalid2.svg"),
                 .copy("Resources/multi.svg"),
-                .copy("Resources/closed.svg")
+                .copy("Resources/closed.svg"),
+                .copy("Resources/skew.svg"),
+                .copy("Resources/noro.svg")
             ]),
     ]
 )
