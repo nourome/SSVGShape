@@ -25,8 +25,8 @@ public struct SVGReader11: SVGReader {
     public func parse() -> Result<[[SVGPath]], SVGError> {
         let svgPaths = read()
             .flatMap(self.getViewBoxRect)
-            .flatMap(self.getPath)
-            .flatMap(self.getTransform)
+            .flatMap(self.buildSVGTree).flatMap(self.getSVGPaths)
+        
             /*
             .flatMap(self.pathStringToSVGPath).map(self.convertToLocalCorrdinates)
         */
@@ -89,7 +89,7 @@ public struct SVGReader11: SVGReader {
             
                 if let path = subStr.firstSubstring(between: "p", and: "/>") {
                     treeStr.append("p" + String(path))
-                    updatedModel.svgTree.append(SVGElement(pathStr: "p" + String(path), transform: transforms))
+                    updatedModel.svgTree.append(SVGElement(pathStr: "p" + String(path), transformStr: transforms))
                     
                 }
                
@@ -110,7 +110,30 @@ public struct SVGReader11: SVGReader {
         
     }
     
-    func getPath(model: SVGModel) -> Result<SVGModel, SVGError> {
+    func getSVGPaths(model:SVGModel) ->  Result<SVGModel, SVGError> {
+        
+        guard !model.svgTree.isEmpty else {
+            return .failure(.contentNotFound("failed to get svg path, make sure it is valid svg file"))
+        }
+        
+        var updatedModel = model
+        updatedModel.paths  = model.svgTree.map { element -> [SVGPath] in
+            return element.path.map { path in
+                var transformedPath = path
+                for trans in element.transforms {
+                    transformedPath =  trans.apply(svgPath: transformedPath, rect: model.rect)
+                }
+                
+                return transformedPath
+            }
+        }
+        print("final paths count \(updatedModel.paths.first?.count)")
+        print("final paths count \(updatedModel.paths)")
+        return .success(updatedModel)
+       
+    }
+    
+    /*func getPath(model: SVGModel) -> Result<SVGModel, SVGError> {
         
         let pathValues = model.content.substrings(between: pathTag, and: "\"")
         guard !pathValues.isEmpty else {
@@ -134,7 +157,7 @@ public struct SVGReader11: SVGReader {
         print("svg Transform tag not found!")
         return .success(model)
     }
-    
+    */
     /*func pathStringToSVGPath(model: SVGModel) ->  Result<SVGModel, SVGError> {
         let svgPaths = splitPathString(model: model).map(convertSVGEelementToSVGPaths).flatMap{$0}
         
@@ -249,23 +272,17 @@ public struct SVGReader11: SVGReader {
         return SVGLineTo(coordinates: [x,y])
     }*/
     
-    func convertToLocalCorrdinates(model: SVGModel) -> SVGModel {
+    /*func convertToLocalCorrdinates(model: SVGModel) -> SVGModel {
         
         guard !model.matrixString.isEmpty else {
             return model
         }
-        let svgTranslate = SVGTranslate(model: model)
+        let svgTranslate = SVGTranslate(matrix: model.matrixString)
         return svgTranslate.apply(for: model)
         
-        /*if let matrix = getTranslateMatrix(model: model) {
-         var updatedModel = model
-         updatedModel.translateMatrix = matrix
-         return applyTranslation(for: updatedModel)
-         }
-         
-         return model*/
         
-    }
+        
+    }*/
     
     /*func getTranslateMatrix(model: SVGModel) -> simd_float3x3? {
      
