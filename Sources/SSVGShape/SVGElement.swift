@@ -27,26 +27,26 @@ struct SVGElement {
     }
     
     
-    private func split(path: String) ->  Result<[String], SVGError> {
+    func split(path: String) ->  Result<[String], SVGError> {
        
         let stripPathTag = String(path.firstSubstring(between: "d=\"", and: "\"") ?? "")
             guard isFirstLetterM(pathString: String(stripPathTag)) else {
-                return .failure(.convertFailed("Path string dose not start with M or m!!"))
+                return .failure(.convertFailed("Path string dose not start with <path d="))
               
         }
         return .success(split(pathString: stripPathTag))
         
     }
    
-    private func isFirstLetterM(pathString: String) -> Bool {
+    func isFirstLetterM(pathString: String) -> Bool {
         return pathString.first?.uppercased() == "M"
     }
     
-    private func isClosedPath(pathString: String) -> Bool {
+    func isClosedPath(pathString: String) -> Bool {
         return pathString.last?.uppercased() == "Z"
     }
 
-    private func split(pathString: String) -> [String] {
+    func split(pathString: String) -> [String] {
         var lastIndex: String.Index = pathString.startIndex
         var lastSymbol = ""
         var svgs: [String] = []
@@ -79,23 +79,25 @@ struct SVGElement {
             for p in points {
                 
                 let first = p.first ?? " "
-                
+                do {
                 if String(first).uppercased() == "M" {
-                    paths.append(SVGMoveTo(pathStr: p))
+                    paths.append(try SVGMoveTo(pathStr: p))
                 }
                 
                 if String(first).uppercased() == "C" {
-                    paths.append(SVGCurveTo(pathStr: p))
+                    paths.append(try SVGCurveTo(pathStr: p))
                 }
                 
                 if String(first).uppercased() == "L" {
-                    paths.append(SVGLineTo(pathStr: p))
+                     paths.append(try SVGLineTo(pathStr: p))
                 }
                 
                 if String(first).uppercased() == "Z" {
-                    paths.append(SVGClose(pathStr: p))
+                    paths.append(try SVGClose(pathStr: p))
                 }
-                
+                } catch  {
+                    return .failure(SVGError.fatalError("something wrong with Path format!!"))
+                }
                 offset += 1
             }
            

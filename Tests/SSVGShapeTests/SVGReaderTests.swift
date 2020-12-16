@@ -38,7 +38,7 @@ final class SVGReaderTests: XCTestCase {
         
         switch pathResult {
         case .success(let model):
-            XCTAssertEqual(model.paths.count, 4)
+            XCTAssertEqual(model.paths.first!.count, 4)
             XCTAssertNotNil(model.paths.first?.first as? SVGMoveTo )
         case .failure(_):
             XCTFail()
@@ -103,145 +103,36 @@ final class SVGReaderTests: XCTestCase {
         
     }
     
-    func testGetTransform() {
-       /* let model = try! reader.read().get()
-        let transformResult =  reader.getTransform(model: model)
-        
-        switch transformResult {
-        case .success(let model):
-            XCTAssertTrue(model.matrixString.contains("matrix"))
-        case .failure(_):
-            XCTFail()
-        }*/
-        
-    }
-    
-    func testPathStringToSVGPath() {
-       /* let model = try! reader.read().get()
-        let modelWithPathString =  try! reader.getPath(model: model).get()
-        let svgPathsResult =  reader.pathStringToSVGPath(model: modelWithPathString)
-        
-        switch svgPathsResult {
-        case .success(let model):
-            XCTAssertEqual(model.paths.first!.count, 4)
-        case .failure(let error):
-            print("error \(error)")
-            XCTFail()
-        }*/
-        
-    }
-    
-    func testMoveToSVGPath() {
-        
-        /*let moveToPoint = reader.getMoveToSVGPath(using: "M1.0,0.0")
-        XCTAssertNotNil(moveToPoint)
-        XCTAssertEqual(moveToPoint?.points.count, 1)
-        XCTAssertEqual(moveToPoint?.points.first, CGPoint(x: 1.0, y: 0.0))
-        
-        let moveToPointNil = reader.getMoveToSVGPath(using: "0.0")
-        XCTAssertNil(moveToPointNil)*/
-       
-    }
-    
-    func testLineToSVGPath() {
-        
-       /* let lineToPoint = reader.getMoveToSVGPath(using: "L2.0,3.0")
-        XCTAssertNotNil(lineToPoint)
-        XCTAssertEqual(lineToPoint?.points.count, 1)
-        XCTAssertEqual(lineToPoint?.points.first, CGPoint(x: 2.0, y: 3.0))
-        
-        let lineToPointNil = reader.getMoveToSVGPath(using: "1.0,1.0f")
-        XCTAssertNil(lineToPointNil)*/
-    }
-    
-    func testCurveToSVGPath() {
-        
-       /* let curveToPoint = reader.getCurveToSVGPath(using: "C2.0,3.0 3.0,4.0 5.0, 6.0")
-        XCTAssertNotNil(curveToPoint)
-        XCTAssertEqual(curveToPoint?.points.count, 3)
-        XCTAssertEqual(curveToPoint?.points.last!.x,  5.0)
-        XCTAssertEqual(curveToPoint!.points.last!.y,  6.0)
-        
-        let curveToPointNil = reader.getMoveToSVGPath(using: "C1.0,1.0 1.0,1.0")
-        XCTAssertNil(curveToPointNil)*/
-    }
-
-    
-    func testGetTransformMatrix() {
-        /*let model = try! reader.read().get()
-        let modelWithPathString =  try! reader.getPath(model: model).get()
-        let modelWithSvgPaths =  try! reader.pathStringToSVGPath(model: modelWithPathString).get()
-        let modelWithTransformMatrix =  try! reader.getTransform(model: modelWithSvgPaths).get()
-        
-        let svgTranslate = SVGTranslate(model: modelWithTransformMatrix)
-        let result  = svgTranslate.matrix
-        XCTAssertEqual(result?[0,0], 1.0)
-        XCTAssertEqual(result?[2,1], -143.889)*/
-    }
-    
-    func testConvertToLocalCorrdinates() {
-        /*let model = try! reader.read().get()
-        let modelWithViewRect =  try! reader.getViewBoxRect(model: model).get()
-        let modelWithPathString =  try! reader.getPath(model: modelWithViewRect).get()
-        let modelWithSvgPaths =  try! reader.pathStringToSVGPath(model: modelWithPathString).get()
-        let modelWithTransformMatrix =  try! reader.getTransform(model: modelWithSvgPaths).get()
-        
-        let result  = reader.convertToLocalCorrdinates(model: modelWithTransformMatrix)
-        let firstPoint = result.paths.first
-        XCTAssertEqual(firstPoint?.first?.points.first, CGPoint(x: 0.0016778523489932886, y: 0.9955464756621747))*/
-        
-    }
-    
-   
-    
-   
-    
-   
-    
-    
-    
     func testGetMultiPath() {
-        /*let reader = SVGReader11(filePath: Bundle.module.path(forResource: "multi", ofType: "svg")!)
+        let reader = SVGReader11(filePath: Bundle.module.path(forResource: "multi", ofType: "svg")!)
         let model = try! reader.read().get()
-        let pathResult =  reader.getPath(model: model)
+        let treeResult =  reader.buildSVGTree(model: model)
         
-        switch pathResult {
+        switch treeResult {
         case .success(let model):
-            print(model.pathPointsString.count)
-            XCTAssertEqual(model.pathPointsString.first!.first!.uppercased(), "M")
-            XCTAssertEqual(model.pathPointsString.count, 2)
-        case .failure(_):
-            XCTFail()
-        }*/
-        
-    }
-    
-    func testGetClosedPath() {
-        /*let reader = SVGReader11(filePath: Bundle.module.path(forResource: "closed", ofType: "svg")!)
-        let model = try! reader.read().get()
-        let pathResult =  reader.getPath(model: model)
-        
-        switch pathResult {
-        case .success(let model):
-            print(model.pathPointsString.count)
-            XCTAssertEqual(model.pathPointsString.first!.last!.uppercased(), "Z")
-            XCTAssertEqual(model.pathPointsString.count, 1)
+            print(model.svgTree.count)
+            XCTAssertNotNil(model.svgTree.first!.path.first! as? SVGMoveTo)
+            XCTAssertEqual(model.svgTree.count, 2)
         case .failure(_):
             XCTFail()
         }
         
-        let svgPathsResult =  reader.pathStringToSVGPath(model: try! pathResult.get())
-        
-        switch svgPathsResult {
-        case .success(let model):
-            XCTAssertNotNil(model.paths.first!.last! as? SVGClose)
-        case .failure(let error):
-            print("error \(error)")
-            XCTFail()
-        }*/
     }
     
-   
+    func testGetClosedPath() {
+        let reader = SVGReader11(filePath: Bundle.module.path(forResource: "closed", ofType: "svg")!)
+        let model = try! reader.read().get()
+        let treeResult =  reader.buildSVGTree(model: model)
+        
+        switch treeResult {
+        case .success(let model):
+            XCTAssertNotNil(model.svgTree.first!.path.last! as? SVGClose)
+            XCTAssertEqual(model.svgTree.count, 1)
+        case .failure(_):
+            XCTFail()
+        }
+        
+    }
     
     static var allTests = [
         ("testParseSvgFile", testParseSvgFile),

@@ -21,7 +21,7 @@ public class SVGPath {
     var points: [CGPoint] = []
     func draw(p: inout Path, rect: CGRect) {}
     
-    init(pathStr: String) {}
+    init(pathStr: String) throws {}
     
     fileprivate func makeCGPoints(coordinates: [Float]) -> [CGPoint] {
         let split = coordinates.chunked(into: 2).map { coord in
@@ -36,15 +36,16 @@ public class SVGPath {
 
 public class SVGMoveTo:SVGPath {
     
-    override init(pathStr: String) {
-        super.init(pathStr: pathStr)
+    override init(pathStr: String) throws {
+        try! super.init(pathStr: pathStr)
         
         let split = pathStr.dropFirst().split(separator: ",")
         guard split.count == 2 else {
-            fatalError("could not constrcut LineTo path")
+            throw SVGError.fatalError("could not construct LineTo path")
         }
         guard let x = Float(split[0]), let y = Float(split[1]) else {
-            fatalError("could not constrcut MoveTo point, x or y are not float")
+            throw SVGError.fatalError("could not construct LineTo path")
+            //fatalError("could not construct MoveTo point, x or y are not float")
         }
         self.points = self.makeCGPoints(coordinates: [x,y])
     }
@@ -58,15 +59,16 @@ public class SVGMoveTo:SVGPath {
 
 public class SVGLineTo: SVGPath {
     
-    override init(pathStr: String) {
-        super.init(pathStr: pathStr)
+    override init(pathStr: String) throws {
+        try! super.init(pathStr: pathStr)
+        
         let split = pathStr.dropFirst().split(separator: ",")
         guard split.count == 2 else {
-            fatalError("could not constrcut LineTo path")
+            throw SVGError.fatalError("could not constrcut LineTo path")
         }
         
         guard let x = Float(split[0]), let y = Float(split[1]) else {
-            fatalError("could not constrcut LineTo point, x or y are not float")
+            throw SVGError.fatalError("could not constrcut LineTo point, x or y are not float")
         }
         
         self.points = self.makeCGPoints(coordinates: [x,y])
@@ -81,12 +83,12 @@ public class SVGLineTo: SVGPath {
 
 public class SVGCurveTo: SVGPath {
     
-    override init(pathStr: String) {
-        super.init(pathStr: pathStr)
+    override init(pathStr: String) throws {
+        try! super.init(pathStr: pathStr)
         let split =  pathStr.dropFirst().replacingOccurrences(of: " ", with: ",").split(separator: ",")
         let points = split.map { Float($0) }.compactMap{$0}
         guard points.count == 6 else {
-            fatalError("could not constrcut CurveTo path, less than 6 points found")
+            throw SVGError.fatalError("could not constrcut CurveTo path, less than 6 points found")
         }
         
         self.points = self.makeCGPoints(coordinates: points)

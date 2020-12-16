@@ -12,4 +12,5 @@ public enum SVGError: Error, Equatable {
     case readingFileError(String)
     case contentNotFound(String)
     case convertFailed(String)
+    case fatalError(String)
 }
