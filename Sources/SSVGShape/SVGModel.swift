@@ -12,7 +12,7 @@ import simd
 struct SVGModel {
     var content: String = ""
     var rect: CGRect = .zero
-    var transMatrixString: String = ""
+    var matrixString: String = ""
     var translateMatrix: simd_float3x3? = nil
     var pathPointsString: [String] = []
     var paths: [[SVGPath]] = []

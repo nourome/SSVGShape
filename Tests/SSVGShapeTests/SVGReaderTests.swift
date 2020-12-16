@@ -9,7 +9,7 @@ import XCTest
 @testable import SSVGShape
 
 final class SVGReaderTests: XCTestCase {
-    let reader = SVGReader1dot1(filePath: Bundle.module.path(forResource: "test", ofType: "svg")!)
+    let reader = SVGReader11(filePath: Bundle.module.path(forResource: "test", ofType: "svg")!)
     
     
     func testParseSvgFile() {
@@ -49,7 +49,7 @@ final class SVGReaderTests: XCTestCase {
         
         switch transformResult {
         case .success(let model):
-            XCTAssertTrue(model.transMatrixString.contains("matrix"))
+            XCTAssertTrue(model.matrixString.contains("matrix"))
         case .failure(_):
             XCTFail()
         }
@@ -113,7 +113,8 @@ final class SVGReaderTests: XCTestCase {
         let modelWithSvgPaths =  try! reader.pathStringToSVGPath(model: modelWithPathString).get()
         let modelWithTransformMatrix =  try! reader.getTransform(model: modelWithSvgPaths).get()
         
-        let result  = reader.getTranslateMatrix(model: modelWithTransformMatrix)
+        let svgTranslate = SVGTranslate(model: modelWithTransformMatrix)
+        let result  = svgTranslate.matrix
         XCTAssertEqual(result?[0,0], 1.0)
         XCTAssertEqual(result?[2,1], -143.889)
     }
@@ -148,7 +149,7 @@ final class SVGReaderTests: XCTestCase {
    
     
     func testParseInvalid() {
-        let reader = SVGReader1dot1(filePath: Bundle.module.path(forResource: "invalid", ofType: "svg")!)
+        let reader = SVGReader11(filePath: Bundle.module.path(forResource: "invalid", ofType: "svg")!)
         let model = reader.parse()
        
         switch model {
@@ -161,7 +162,7 @@ final class SVGReaderTests: XCTestCase {
     }
     
     func testParseInvalid2() {
-        let reader = SVGReader1dot1(filePath: Bundle.module.path(forResource: "invalid2", ofType: "svg")!)
+        let reader = SVGReader11(filePath: Bundle.module.path(forResource: "invalid2", ofType: "svg")!)
         let model = reader.parse()
        
         switch model {
@@ -174,7 +175,7 @@ final class SVGReaderTests: XCTestCase {
     }
     
     func testGetMultiPath() {
-        let reader = SVGReader1dot1(filePath: Bundle.module.path(forResource: "multi", ofType: "svg")!)
+        let reader = SVGReader11(filePath: Bundle.module.path(forResource: "multi", ofType: "svg")!)
         let model = try! reader.read().get()
         let pathResult =  reader.getPath(model: model)
         
@@ -190,7 +191,7 @@ final class SVGReaderTests: XCTestCase {
     }
     
     func testGetClosedPath() {
-        let reader = SVGReader1dot1(filePath: Bundle.module.path(forResource: "closed", ofType: "svg")!)
+        let reader = SVGReader11(filePath: Bundle.module.path(forResource: "closed", ofType: "svg")!)
         let model = try! reader.read().get()
         let pathResult =  reader.getPath(model: model)
         

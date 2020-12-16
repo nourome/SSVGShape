@@ -10,7 +10,7 @@ import Sweep
 import CoreGraphics
 import simd
 
-public struct SVGReader1dot1: SVGReader {
+public struct SVGReader11: SVGReader {
     
     public var filePath: String
     private let viewBoxTag: Identifier = "viewBox=\""
@@ -81,7 +81,7 @@ public struct SVGReader1dot1: SVGReader {
         
         if let transformValues = model.content.firstSubstring(between: transformTag, and: "\"") {
             var updatedModel = model
-            updatedModel.transMatrixString = String(transformValues)
+            updatedModel.matrixString = String(transformValues)
             return .success(updatedModel)
         }
         
@@ -205,21 +205,23 @@ public struct SVGReader1dot1: SVGReader {
     
     func convertToLocalCorrdinates(model: SVGModel) -> SVGModel {
         
-        guard !model.transMatrixString.isEmpty else {
+        guard !model.matrixString.isEmpty else {
             return model
         }
+        let svgTranslate = SVGTranslate(model: model)
+        return svgTranslate.apply(for: model)
         
-        if let matrix = getTranslateMatrix(model: model) {
+        /*if let matrix = getTranslateMatrix(model: model) {
             var updatedModel = model
             updatedModel.translateMatrix = matrix
             return applyTranslation(for: updatedModel)
         }
         
-        return model
+        return model*/
         
     }
     
-    func getTranslateMatrix(model: SVGModel) -> simd_float3x3? {
+    /*func getTranslateMatrix(model: SVGModel) -> simd_float3x3? {
         
         if model.transMatrixString.contains("matrix") {
             if let transformMatrix = model.content.firstSubstring(between: matrixTag, and: ")") {
@@ -235,9 +237,9 @@ public struct SVGReader1dot1: SVGReader {
         }
         
         return nil
-    }
+    }*/
     
-    func applyTranslation(for model: SVGModel) -> SVGModel {
+    /*func applyTranslation(for model: SVGModel) -> SVGModel {
         
         guard let matrix = model.translateMatrix else {
             return model
@@ -271,7 +273,7 @@ public struct SVGReader1dot1: SVGReader {
         //updatedModel.paths = transformedPathsx
         
         return updatedModel
-    }
+    }*/
     
     
     
