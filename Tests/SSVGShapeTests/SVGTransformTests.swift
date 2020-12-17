@@ -15,11 +15,10 @@ final class SVGTransformTests: XCTestCase {
     func testParseMatrix() {
         let translate = SVGTransform(matrices: ["matrix(1,0,0,1,-178.831,-143.889)"])
         var matrix = matrix_identity_float3x3
-        matrix[2,0] = Float(-178.831)
-        matrix[2,1] = Float(-143.889)
+        matrix[2, 0] = Float(-178.831)
+        matrix[2, 1] = Float(-143.889)
         XCTAssertNotNil(translate)
         XCTAssertEqual(translate.parseMatrix(matricesStr: ["matrix(1,0,0,1,-178.831,-143.889)"]), [matrix])
     }
-    
-    
+
 }

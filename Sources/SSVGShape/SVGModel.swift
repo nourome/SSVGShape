@@ -14,5 +14,3 @@ internal struct SVGModel {
     var svgTree: [SVGElement] = []
     var paths: [[SVGPath]] = []
 }
-
-

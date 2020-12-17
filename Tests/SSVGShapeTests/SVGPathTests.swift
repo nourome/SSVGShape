@@ -19,7 +19,7 @@ final class SVGPathTests: XCTestCase {
         XCTAssertEqual(moveToPoint.points.first, CGPoint(x: 1.0, y: 0.0))
         XCTAssertThrowsError(try SVGMoveTo(pathStr: "0.0"))
     }
-    
+
     func testLineToSVGPath() {
         let lineToPoint = try! SVGMoveTo(pathStr: "L0.0,0.0")
         XCTAssertNotNil(lineToPoint)
@@ -27,7 +27,7 @@ final class SVGPathTests: XCTestCase {
         XCTAssertEqual(lineToPoint.points.first, CGPoint(x: 0.0, y: 0.0))
         XCTAssertThrowsError(try SVGLineTo(pathStr: "L0.0"))
     }
-    
+
     func testCurveToSVGPath() {
         let curveToPoint = try! SVGCurveTo(pathStr: "C1.0,0.0 1.0,0.0 3.0,4.0")
         XCTAssertNotNil(curveToPoint)
@@ -35,7 +35,7 @@ final class SVGPathTests: XCTestCase {
         XCTAssertEqual(curveToPoint.points.first, CGPoint(x: 1.0, y: 0.0))
         XCTAssertThrowsError(try SVGCurveTo(pathStr: "C0.0"))
     }
-    
+
     func testClosedSVGPath() {
         let closedPoint = try! SVGClose(pathStr: "")
         XCTAssertNotNil(closedPoint)

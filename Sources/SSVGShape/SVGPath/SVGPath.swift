@@ -14,17 +14,17 @@ enum SVGPathType: String, CaseIterable {
     case lineTo = "L"
     case curveTo = "C"
     case close = "Z"
-    
-    func getSVGPath(p: String) throws -> SVGPath {
+
+    func getSVGPath(str: String) throws -> SVGPath {
         switch self {
         case .moveTo:
-            return try SVGMoveTo(pathStr: p)
+            return try SVGMoveTo(pathStr: str)
         case .lineTo:
-            return try SVGLineTo(pathStr: p)
+            return try SVGLineTo(pathStr: str)
         case .curveTo:
-            return try SVGCurveTo(pathStr: p)
+            return try SVGCurveTo(pathStr: str)
         case .close:
-            return try SVGClose(pathStr: p)
+            return try SVGClose(pathStr: str)
         }
     }
 }
@@ -32,33 +32,25 @@ enum SVGPathType: String, CaseIterable {
 public class SVGPath {
 
     var points: [CGPoint] = []
-    func draw(p: inout Path, rect: CGRect) {}
-    
+    func draw(path: inout Path, rect: CGRect) {}
+
     internal init(pathStr: String) throws {}
-    
-    static func make(pathStr: String, for c: String) throws -> SVGPath? {
+
+    static func make(pathStr: String, for char: String) throws -> SVGPath? {
         for type in SVGPathType.allCases {
-            if type.rawValue == c.uppercased() {
-                return try type.getSVGPath(p: pathStr)
+            if type.rawValue == char.uppercased() {
+                return try type.getSVGPath(str: pathStr)
             }
         }
-        
+
         return nil
     }
-    
+
     internal func makeCGPoints(coordinates: [Float]) -> [CGPoint] {
         let split = coordinates.chunked(into: 2).map { coord in
             CGPoint(x: CGFloat(coord[0]), y: CGFloat(coord[1]))
-            
+
         }
         return split
     }
 }
-
-
-
-
-
-
-
-

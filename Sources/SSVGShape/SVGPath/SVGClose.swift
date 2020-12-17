@@ -10,12 +10,12 @@ import CoreGraphics
 import SwiftUI
 
 internal class SVGClose: SVGPath {
-    
+
     override init(pathStr: String) throws {
         try super.init(pathStr: pathStr)
     }
-    override func draw(p: inout Path, rect: CGRect) {
-        p.closeSubpath()
+    override func draw(path: inout Path, rect: CGRect) {
+        path.closeSubpath()
     }
-    
+
 }
