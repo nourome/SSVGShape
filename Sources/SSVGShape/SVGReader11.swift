@@ -114,15 +114,12 @@ public struct SVGReader11: SVGReader {
         
         var updatedModel = model
         updatedModel.paths  = model.svgTree.map { element -> [SVGPath] in
+            guard let transform = element.transforms else {return element.path}
             return element.path.map { path in
-                var transformedPath = path
-                for trans in element.transforms {
-                    transformedPath =  trans.apply(svgPath: transformedPath, rect: model.rect)
-                }
-                
-                return transformedPath
+                transform.apply(svgPath: path, rect: model.rect)
             }
-        }
+        }.compactMap{$0}
+        
         return .success(updatedModel)
        
     }

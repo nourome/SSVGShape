@@ -10,7 +10,7 @@ import Foundation
 struct SVGElement {
     private let endOfContent = "~"
     var path: [SVGPath] = []
-    var transforms: [SVGTransform] = []
+    var transforms: SVGTransform?
     
     init(pathStr: String, transformStr: [String]) {
         let result = split(path: pathStr).map(self.convertPathStringToSVGPaths).flatMap{$0}
@@ -23,7 +23,7 @@ struct SVGElement {
             fatalError("could not constrcut SVGPath from path string")
         }
         
-        transforms = convertTransfromStrToSVGTransform(transformArr: transformStr).reversed()
+        transforms =  SVGTransform(matrices: transformStr)
     }
     
     
@@ -104,11 +104,5 @@ struct SVGElement {
         return .success(paths)
     }
     
-    func convertTransfromStrToSVGTransform(transformArr: [String]) -> [SVGTransform] {
-        
-        return transformArr.map { str -> SVGTransform in
-            SVGTranslate(matrix: str)
-        }
-        
-    }
+
 }
