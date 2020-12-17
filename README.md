@@ -34,16 +34,18 @@ struct ContentView: View {
     var body: some View {
     VStack {
         shape
-            .trim(from: 0, to: visible ? 1 : 0).fill(LinearGradient(
+            .trim(from: 0, to: visible ? 1 : 0)
+            .fill(LinearGradient(
                 gradient: Gradient(colors: [Self.gradientStart, Self.gradientEnd]),
                 startPoint: UnitPoint(x: 0.5, y: 0),
                 endPoint: UnitPoint(x: 0.5, y: 0.6)))
-        .aspectRatio(16/9, contentMode: .fit)
-        .border(Color.gray, width: 1)
-        .padding().frame(width: 300, height: 300, alignment: .center)
+            .aspectRatio(16/9, contentMode: .fit)
+            .border(Color.gray, width: 1)
+            .padding()
+            .frame(width: 300, height: 300, alignment: .center)
     
-        
-    Button(action: {      withAnimation(Animation.easeInOut(duration: 2)) {
+    Button(action: {     
+    withAnimation(Animation.easeInOut(duration: 2)) {
         self.visible.toggle()
     }
     }) { Text("Animate") } }
