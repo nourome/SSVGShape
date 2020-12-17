@@ -64,46 +64,66 @@ public struct SVGReader11: SVGReader {
     func buildSVGTree(model: SVGModel) -> Result<SVGModel, SVGError> {
         
         var previousChar = ""
-        var treeStr: [String] = []
         var transforms: [String] = []
         var updatedModel = model
-        let removeHeaderTags =  model.content.firstSubstring(between: "<g", and: "</svg>")
-        guard var content = removeHeaderTags else {
+        
+        guard let content = stripHeaderTags(for: model.content) else {
             return .failure(.contentNotFound("failed to build svg tree, make sure it is valid svg file"))
         }
         
-        content = "<g " + String( content)
         for (offset, c) in content.enumerated() {
             
-            if c.lowercased() == "g" &&  previousChar == "<"   {
-                let subStr = content[content.index(content.startIndex, offsetBy: offset-1)..<content.endIndex]
-                if let transformMatrix = subStr.firstSubstring(between: "g", and: ">") {
-                    transforms.append(String(transformMatrix))
-                }
-            } else if c.lowercased() == "p" &&  previousChar == "<"  {
-                let subStr = content[content.index(content.startIndex, offsetBy: offset)..<content.endIndex]
+            if let transformMatrix = getTransformMatrixTag(for: c, with: previousChar, from: content, by: offset) {
+                transforms.append(String(transformMatrix))
+            }
             
-                if let path = subStr.firstSubstring(between: "p", and: "/>") {
-                    treeStr.append("p" + String(path))
-                    updatedModel.svgTree.append(SVGElement(pathStr: "p" + String(path), transformStr: transforms))
-                    
-                }
-               
-                
-            } else if c.lowercased() == "g" &&  previousChar == "/"  {
-                treeStr.append("close group")
+            if let path = getPathTag(for: c, with: previousChar, from: content, by: offset) {
+                updatedModel.svgTree.append(SVGElement(pathStr: "p" + String(path), transformStr: transforms))
+            }
+            
+            if isEndOfGroupTag(c: c, previousChar: previousChar)  {
                 transforms.removeLast()
             }
             
             previousChar = c.lowercased()
         }
         
-        guard !treeStr.isEmpty else {
-            return .failure(.contentNotFound("failed to build svg tree, make sure it is valid svg file"))
-        }
-        
         return .success(updatedModel)
         
+    }
+    
+    func stripHeaderTags(for content: String) -> String? {
+        
+        guard let stripped = content.firstSubstring(between: "<g", and: "</svg>") else {
+            return nil
+        }
+        
+        return "<g " + String(stripped)
+    }
+    
+    func getTransformMatrixTag(for c: Character, with previousChar: String, from content: String, by offset: Int) -> Substring? {
+        
+        if c.lowercased() == "g" &&  previousChar == "<"   {
+            let subStr = content[content.index(content.startIndex, offsetBy: offset)..<content.endIndex]
+            return subStr.firstSubstring(between: "g", and: ">")
+        }
+        
+        return nil
+        
+    }
+    
+    func getPathTag(for c: Character, with previousChar: String, from content: String, by offset: Int) -> Substring? {
+        
+        if c.lowercased() == "p" &&  previousChar == "<"  {
+            let subStr = content[content.index(content.startIndex, offsetBy: offset)..<content.endIndex]
+            return subStr.firstSubstring(between: "p", and: "/>")
+        }
+        
+        return nil
+    }
+    
+    func isEndOfGroupTag(c: Character, previousChar: String) -> Bool {
+        return c.lowercased() == "g" &&  previousChar == "/"
     }
     
     func getSVGPaths(model:SVGModel) ->  Result<SVGModel, SVGError> {

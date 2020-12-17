@@ -8,7 +8,7 @@
 import Foundation
 import CoreGraphics
 
-struct SVGModel {
+internal struct SVGModel {
     var content: String = ""
     var rect: CGRect = .zero
     var svgTree: [SVGElement] = []

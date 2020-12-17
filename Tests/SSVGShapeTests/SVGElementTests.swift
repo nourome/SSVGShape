@@ -15,8 +15,8 @@ final class SVGElementTests: XCTestCase {
     
     func testStartsWithM() {
        
-        XCTAssertTrue(element.isFirstLetterM(pathString: "M100,100L0.0,0,0"))
-        XCTAssertFalse(element.isFirstLetterM(pathString: "L100,100L0.0,0,0"))
+        XCTAssertTrue(element.isFirstLetterM(str: "M100,100L0.0,0,0"))
+        XCTAssertFalse(element.isFirstLetterM(str: "L100,100L0.0,0,0"))
     }
     
     func testEndsWithZ() {
@@ -58,10 +58,4 @@ final class SVGElementTests: XCTestCase {
         }
     }
     
-    func testConvertTransfromStrToSVGTransform() {
-        let transforms = element.convertTransfromStrToSVGTransform(transformArr: ["matrix(1,0,0,1,-178.831,-143.889)"])
-        
-        XCTAssertEqual(transforms.count, 1)
-        XCTAssertNotNil(transforms.first as? SVGTranslate)
-    }
 }
