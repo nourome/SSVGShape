@@ -94,9 +94,12 @@ public struct SVGReader11: SVGReader {
     }
 
     func stripHeaderTags(for content: String) -> String? {
-
+        
         guard let stripped = content.firstSubstring(between: "<g", and: "</svg>") else {
-            return nil
+            guard let pathToSVg = content.firstSubstring(between: "<path", and: "</svg>") else{
+                return nil
+            }
+            return "<path" + String(pathToSVg)
         }
 
         return "<g " + String(stripped)
