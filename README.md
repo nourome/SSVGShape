@@ -6,7 +6,7 @@ SSVGShape supports SVG v1.1 and may not work with different SVG file format
 
 ## SVG 1.1 valid file format 
 
-Example of valid SVG file. Notice the transform tag, it is essential to have transform matix rather than translate. scale, roatate, skew tags seperatley 
+Example of valid SVG file. Notice the transform tag, it is essential to have transform matix rather than translate. scale, roatate, skew tags seperatley. SSVGShape supports only absolute coordinates (capital letters M,C,L,Z) and won't work with relative coordinates (lower letters).  All vectors expoerted using Affinity desginer with options (selection without background) should work with this release.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>

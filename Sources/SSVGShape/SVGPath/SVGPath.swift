@@ -38,7 +38,7 @@ public class SVGPath {
 
     static func make(pathStr: String, for char: String) throws -> SVGPath? {
         for type in SVGPathType.allCases {
-            if type.rawValue == char.uppercased() {
+            if type.rawValue == char {
                 return try type.getSVGPath(str: pathStr)
             }
         }

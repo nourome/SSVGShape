@@ -16,10 +16,10 @@ internal class SVGMoveTo: SVGPath {
 
         let split = pathStr.dropFirst().split(separator: ",")
         guard split.count == 2 else {
-            throw SVGError.fatalError("could not construct LineTo path")
+            throw SVGError.fatalError("could not construct MoveTo path")
         }
         guard let xAxis = Float(split[0]), let yAxis = Float(split[1]) else {
-            throw SVGError.fatalError("could not construct LineTo path")
+            throw SVGError.fatalError("could not construct MoveTo path")
         }
         self.points = self.makeCGPoints(coordinates: [xAxis, yAxis])
     }

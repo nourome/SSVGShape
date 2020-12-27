@@ -44,40 +44,52 @@ internal struct SVGElement {
     }
 
     func isFirstLetterM(str: String) -> Bool {
-        return str.first?.uppercased() == SVGPathType.moveTo.rawValue
+        return String(str.first ?? "0") == SVGPathType.moveTo.rawValue
     }
 
     func isClosedPath(pathString: String) -> Bool {
-        return pathString.last?.uppercased() == SVGPathType.close.rawValue
+        return String(pathString.last ?? "0") == SVGPathType.close.rawValue
     }
 
     func split(pathString: String) -> [String] {
         var lastIndex: String.Index = pathString.startIndex
         var lastSymbol = ""
         var svgs: [String] = []
-        let pathContent = pathString + endOfContent
+        let pathContent = splitByClosedPaths(content: pathString)
+        
+        for closedPath in pathContent {
+            lastIndex = closedPath.startIndex
+            lastSymbol = ""
+            for (offset, char) in closedPath.enumerated() {
+                lastSymbol = isFirstLetterM(str: String(char).uppercased()) ? String(char) : lastSymbol
+                let offsetIndex = closedPath.index(closedPath.startIndex, offsetBy: offset)
 
-        for (offset, char) in pathContent.enumerated() {
-            lastSymbol = isFirstLetterM(str: String(char).uppercased()) ? String(char) : lastSymbol
-            let offsetIndex = pathContent.index(pathContent.startIndex, offsetBy: offset)
-
-            if let nextPath = getNextPathString(for: char, from: pathContent,
-                                                by: offset, lastIndex: lastIndex,
-                                                symbol: lastSymbol) {
-                svgs.append(nextPath)
-                lastIndex = offsetIndex
-                lastSymbol = String(char)
+                if let nextPath = getNextPathString(for: char, from: closedPath,
+                                                    by: offset, lastIndex: lastIndex,
+                                                    symbol: lastSymbol) {
+                    svgs.append(nextPath)
+                    lastIndex = offsetIndex
+                    lastSymbol = String(char)
+                }
             }
         }
 
         return svgs
     }
 
+    func splitByClosedPaths(content: String) -> [String] {
+        if content.contains(Character(SVGPathType.close.rawValue)) {
+            return content.split(separator: Character(SVGPathType.close.rawValue)).map { String($0) + SVGPathType.close.rawValue + endOfContent
+            }
+        }
+        return [content + endOfContent]
+    }
+    
     func getNextPathString(for char: Character, from content: String,
                            by offset: Int, lastIndex: String.Index, symbol: String) -> String? {
 
         let offsetIndex = content.index(content.startIndex, offsetBy: offset)
-        if svgPathSymbols.contains(String(char).uppercased()) {
+        if svgPathSymbols.contains(String(char)) {
             let subPath =  String(content[lastIndex..<offsetIndex]).trimmingCharacters(in: .whitespaces)
             return !subPath.contains(symbol) ?  symbol + subPath : subPath
         }
