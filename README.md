@@ -1,6 +1,6 @@
 
 <p align="center">
-    <img src="samples/logo.png" width="500" max-width="90%" alt="" />
+    <img src="samples/logo.png" width="500" max-width="30%" alt="" />
 </p>
 <p align="center">
     <img src="https://img.shields.io/badge/Swift-5.0-orange.svg" />
@@ -79,7 +79,7 @@ SSVGShape is distributed as a Swift package, and it’s recommended to install i
 
 <img src="https://github.com/nour7/SSVGShape/blob/master/samples/ssvgshape_sample_1.gif" width="350">
 
-<img src="https://github.com/nour7/SSVGShape/samples/blob/master/samples/ssvgshape_sample_2.gif" width="350">
+<img src="https://github.com/nour7/SSVGShape/blob/master/samples/ssvgshape_sample_2.gif" width="350">
 
 
 ## Dependencies
