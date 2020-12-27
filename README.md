@@ -1,8 +1,22 @@
+
+<p align="center">
+    <img src="samples/Logo.png" width="500" max-width="90%" alt="" />
+</p>
+<p align="center">
+    <img src="https://img.shields.io/badge/Swift-5.0-orange.svg" />
+    <a href="https://swift.org/package-manager">
+        <img src="https://img.shields.io/badge/spm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" />
+    </a>
+    <img src="https://img.shields.io/badge/platforms-mac+linux-brightgreen.svg?style=flat" alt="Mac + Linux" />
+</p>
+
+
 # SSVGShape
 
 **SSVGShape** — a simple library that parses and converts SVG files to SwiftUI shapes which can be animated.
 
 SSVGShape supports SVG v1.1 and may not work with different SVG file format
+
 
 ## SVG 1.1 valid file format 
 
@@ -25,32 +39,54 @@ Import the library using swift package manager and creat new SwiftUI project the
 ```swift
 
 struct ContentView: View {
-    @State var visible = false
-    static let gradientStart = Color(red: 239.0 / 255, green: 120.0 / 255, blue: 221.0 / 255)
-    static let gradientEnd = Color(red: 239.0 / 255, green: 172.0 / 255, blue: 120.0 / 255)
+    static let gradientStart = Color.yellow
+    static let gradientEnd = Color.orange
 
-    let shape =  SSVGShape<SVGReader11>(reader: SVGReader11(filePath: Bundle.main.path(forResource: "dog", ofType: "svg")!))
+    let shape =  SSVGShape<SVGReader11>(reader: SVGReader11(filePath: Bundle.main.path(forResource: "bitcoin", ofType: "svg")!))
+    
+    @State var visible = false
     
     var body: some View {
     VStack {
         shape
             .trim(from: 0, to: visible ? 1 : 0)
-            .fill(LinearGradient(
-                gradient: Gradient(colors: [Self.gradientStart, Self.gradientEnd]),
-                startPoint: UnitPoint(x: 0.5, y: 0),
-                endPoint: UnitPoint(x: 0.5, y: 0.6)))
-            .aspectRatio(16/9, contentMode: .fit)
-            .border(Color.gray, width: 1)
+            .fill(LinearGradient(gradient: Gradient(colors:
+                                [Self.gradientStart, Self.gradientEnd]),
+                                startPoint: UnitPoint(x: 0.5, y: 0),
+                                endPoint: UnitPoint(x: 0.5, y: 0.6)))
+            .aspectRatio(1, contentMode: .fit)
             .padding()
-            .frame(width: 300, height: 300, alignment: .center)
+            .frame(width: 380, height: 380, alignment: .center)
     
-    Button(action: {     
-    withAnimation(Animation.easeInOut(duration: 2)) {
+        
+        
+    Button(action: { withAnimation(Animation.easeInOut(duration: 2)) {
         self.visible.toggle()
+        
     }
     }) { Text("Animate") } }
     }
+}
 ```
 
 
+## Installation
+
+SSVGShape is distributed as a Swift package, and it’s recommended to install it using [the Swift Package Manager](https://github.com/apple/swift-package-manager), by declaring it as a dependency in your project’s `Package.swift` file:
+
+
 ## Showcases
+
+<img src="https://github.com/nour7/SSVGShape/samples/blob/master/ssvgshape_sample_1.gif" width="350">
+
+<img src="https://github.com/nour7/SSVGShape/samples/blob/master/ssvgshape_sample_2.gif" width="350">
+
+
+## Dependencies
+
+SSVGShape requires ![Sweep package](https://github.com/JohnSundell/Sweep) 
+
+
+## Contributions & support
+
+SSVGShape is developed completely in the open, and your contributions are more than welcome.
