@@ -13,14 +13,15 @@
 
 # SSVGShape
 
-**SSVGShape** — a simple library that parses and converts SVG files to SwiftUI shapes which can be animated.
+**SSVGShape** — a simple library that converts SVG files to SwiftUI shapes which can be animated.
 
 SSVGShape supports SVG v1.1 and may not work with different SVG file format
 
 
 ## SVG 1.1 valid file format 
 
-Example of valid SVG file. Notice the transform tag, it is essential to have transform matix rather than translate. scale, roatate, skew tags seperatley. SSVGShape supports only absolute coordinates (capital letters M,C,L,Z) and won't work with relative coordinates (lower letters).  All vectors expoerted using Affinity desginer with options (selection without background) should work with this release.
+The following xml code shows an example of a valid SVG file. Notice the transform tag, it is essential to have transform matrix rather than translate. scale, rotate, or skew tags separately. SSVGShape library supports only absolute coordinates (capital letters M,C,L,Z) and won't work with relative coordinates (lower letters). Vector graphics exported using Affinity designer with the option (selection without background) should work with this release.
+
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -34,7 +35,7 @@ Example of valid SVG file. Notice the transform tag, it is essential to have tra
 
 ## How to use the library
 
-Import the library using swift package manager and creat new SwiftUI project then use the following code
+Import the library using swift package manager then create new SwiftUI project then use the following code
 
 ```swift
 
