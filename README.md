@@ -1,6 +1,6 @@
 
 <p align="center">
-    <img src="samples/logo.png" width="500" max-width="30%" alt="" />
+    <img src="samples/logo.png" width="200" max-width="50%" alt="" />
 </p>
 <p align="center">
     <img src="https://img.shields.io/badge/Swift-5.0-orange.svg" />
